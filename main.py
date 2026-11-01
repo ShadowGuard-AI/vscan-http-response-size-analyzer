@@ -26,6 +26,11 @@ def get_response_size(url):
     """
     try:
         response = requests.get(url, timeout=10)
+        # The size is the decoded body: requests transparently
+        # decompresses gzip, and redirects have already been followed,
+        # so the number compared to the threshold is the final page's
+        # plain bytes, not what crossed the wire or what the first
+        # response in a redirect chain weighed.
         return len(response.content), response.status_code
     except requests.exceptions.RequestException as e:
         logging.error(f"Error fetching {url}: {e}")
@@ -74,6 +79,10 @@ def directory_bruteforce(url, wordlist_path):
             failed += 1
             continue
         recorded += 1
+        # Sizes found this way are only logged. The threshold the tool
+        # is built around is never passed into this function, so an
+        # enormous response on a wordlist path raises no warning, and
+        # nothing compares these sizes against each other either.
         logging.info(f"{target_url}: Status {status}, Response size {size} bytes")
     logging.info(f"Directory brute-force summary: {recorded} responses recorded, {failed} fetches failed.")
     return recorded, failed
