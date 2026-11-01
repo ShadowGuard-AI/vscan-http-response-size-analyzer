@@ -15,3 +15,6 @@ Analyzes HTTP response sizes to detect anomalies that might indicate data exfilt
 
 ## License
 Copyright (c) ShadowGuardAI
+
+## Failure behaviour
+If the primary URL cannot be fetched, or a wordlist given with -w cannot be opened, the run prints a failure summary and exits non-zero. Directory brute-force records the status and size of error responses (such as 401, 403, and 404) as results, because those responses are the data this analyzer reports.
